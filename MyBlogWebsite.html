@@ -5,65 +5,426 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sevex's Blog</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@300;400&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap');
+        
         :root {
-            --color-1: #cad2c5; --color-2: #84a98c; --color-3: #52796f;
-            --color-4: #354f52; --color-5: #2f3e46; --text: #2f3e46;
-            --bg: #fff; --sidebar-bg: #354f52; --sidebar-text: #fff;
+            --color-1: #f0f4f8;
+            --color-2: #48bb78;
+            --color-3: #38a169;
+            --color-4: #2c3e50;
+            --color-5: #718096;
+            --text: #2d3748;
+            --bg: #ffffff;
+            --sidebar-bg: #f7fafc;
+            --sidebar-text: #2d3748;
+            --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
+        
         .dark-theme {
-            --color-1: #2f3e46; --color-2: #354f52; --color-3: #52796f;
-            --color-4: #84a98c; --color-5: #cad2c5; --text: #cad2c5;
-            --bg: #2f3e46; --sidebar-bg: #1a2327; --sidebar-text: #cad2c5;
+            --color-1: #2d3748;
+            --color-2: #68d391;
+            --color-3: #48bb78;
+            --color-4: #e2e8f0;
+            --color-5: #a0aec0;
+            --text: #f7fafc;
+            --bg: #1a202c;
+            --sidebar-bg: #2d3748;
+            --sidebar-text: #f7fafc;
+            --card-shadow: 0 10px 15px -3px rgba(255, 255, 255, 0.1), 0 4px 6px -2px rgba(255, 255, 255, 0.05);
         }
-        body, html { margin: 0; padding: 0; font-family: 'Roboto', sans-serif; background: var(--bg); color: var(--text); height: 100%; overflow-x: hidden; transition: 0.3s; }
-        .container { display: flex; flex-direction: column; min-height: 100vh; }
-        .sidebar { width: 100%; background: var(--sidebar-bg); padding: 30px; display: flex; flex-direction: column; align-items: center; transition: 0.3s; }
-        .logo { width: 120px; height: 120px; background: linear-gradient(45deg, var(--color-4), var(--color-2)); border-radius: 50%; margin-bottom: 0px; display: flex; justify-content: center; align-items: center; font-size: 2.5em; color: var(--sidebar-text); font-weight: bold; }
-        h1 { font-family: 'Playfair Display', serif; color: var(--sidebar-text); margin-bottom: 5px; font-size: 2em; }
-        .title { color: var(--sidebar-text); margin-bottom: 5px; font-size: 0.9em; }
-        .social-icons { margin-top: 20px; display: flex; gap: 15px; }
-        .social-icon { display: flex; align-items: center; justify-content: center; width: 35px; height: 35px; background-color: var(--color-3); border-radius: 50%; transition: 0.3s; }
-        .social-icon:hover { transform: scale(1.1); background-color: var(--color-2); }
-        .social-icon svg { width: 18px; height: 18px; fill: var(--sidebar-text); }
-        .main-content { flex-grow: 1; padding: 30px; overflow-y: auto; background: var(--bg); transition: 0.3s; }
-        .article { background: var(--bg); margin-bottom: 25px; padding: 15px; border-radius: 8px; transition: 0.3s; cursor: pointer; border: 1px solid var(--color-4); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .article:hover { transform: translateY(-3px); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
-        .article h2 { font-family: 'Playfair Display', serif; color: var(--color-4); margin-top: 0; font-size: 1.5em; }
-        .article-content { color: var(--text); }
-        .article-info { background: rgba(53,79,82,0.1); color: var(--text); padding: 8px; border-radius: 5px; font-size: 0.8em; margin-top: 10px; }
-        .tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
-        .tag { background: var(--color-2); color: var(--sidebar-text); padding: 2px 6px; border-radius: 12px; font-size: 0.7em; }
-        .modal { display: none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); }
-        .modal-content { background-color: var(--bg); margin: 5% auto; padding: 20px; border: 1px solid var(--color-4); width: 80%; max-width: 700px; border-radius: 8px; position: relative; }
-        .close { color: var(--text); float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
-        .close:hover { color: var(--color-3); }
-        .nav-button { background-color: var(--color-4); color: var(--sidebar-text); border: none; padding: 8px 15px; font-size: 14px; cursor: pointer; border-radius: 5px; transition: 0.3s; }
-        .nav-button:hover:not(:disabled) { background-color: var(--color-2); }
-        .nav-button:disabled { background-color: #cccccc; cursor: not-allowed; }
-        .theme-toggle { background-color: var(--color-3); color: var(--sidebar-text); border: none; padding: 8px; border-radius: 50%; cursor: pointer; transition: 0.3s; margin-top: 20px; }
-        .theme-toggle:hover { background-color: var(--color-2); }
-        .theme-toggle svg { width: 20px; height: 20px; fill: var(--sidebar-text); }
-
-        @media (min-width: 768px) {
-            .container { flex-direction: row; }
-            .sidebar { width: 250px; }
+        
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            height: 100%;
+            overflow-x: hidden;
+            transition: background-color 0.5s, color 0.5s;
         }
-
-        @media (max-width: 767px) {
-            .container { flex-direction: column; }
-            .sidebar { flex-direction: column; width: 100%; align-items: center; }
-            .social-icons { margin-top: 20px; justify-content: center; }
-            .main-content { padding: 15px; }
+        
+        .container {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        .sidebar {
+            width: 1000px;
+            background: var(--sidebar-bg);
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: background-color 0.5s;
+            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            z-index: 10;
+        }
+        
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, var(--color-2) 0%, transparent 70%);
+            opacity: 0.1;
+            z-index: 0;
+        }
+        
+        .logo {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 30px;
+            border: 5px solid var(--color-2);
+            transition: border-color 0.5s, transform 0.3s;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .logo:hover {
+            transform: scale(1.05);
+        }
+        
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--sidebar-text);
+            margin-bottom: 10px;
+            font-size: 2.8em;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .title {
+            color: var(--sidebar-text);
+            margin-bottom: 8px;
+            font-size: 1.1em;
+            opacity: 0.9;
+            font-weight: 500;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .social-icons {
+            margin-top: 40px;
+            display: flex;
+            gap: 25px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .social-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            background-color: var(--color-2);
+            border-radius: 50%;
+            transition: 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .social-icon:hover {
+            transform: translateY(-5px) rotate(360deg);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .social-icon svg {
+            width: 24px;
+            height: 24px;
+            fill: var(--sidebar-bg);
+        }
+        
+        .main-content {
+            flex-grow: 1;
+            padding: 60px;
+            overflow-y: auto;
+            background: var(--bg);
+            transition: background-color 0.5s;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .article {
+            background: var(--bg);
+            margin-bottom: 40px;
+            padding: 30px;
+            border-radius: 15px;
+            transition: 0.5s;
+            cursor: pointer;
+            border: 1px solid var(--color-5);
+            box-shadow: var(--card-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .article::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, var(--color-2), transparent);
+            opacity: 0;
+            transition: opacity 0.5s;
+            z-index: 0;
+        }
+        
+        .article:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .article:hover::before {
+            opacity: 0.1;
+        }
+        
+        .article h2 {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--color-3);
+            margin-top: 0;
+            font-size: 2.2em;
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .article-content {
+            color: var(--text);
+            font-size: 1.1em;
+            line-height: 1.8;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .article-info {
+            background: var(--color-1);
+            color: var(--text);
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 0.95em;
+            margin-top: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .tag {
+            background: var(--color-2);
+            color: var(--bg);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 500;
+            transition: 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .tag:hover {
+            background: var(--color-3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+        }
+        
+        .modal-content {
+            background-color: var(--bg);
+            margin: 5% auto;
+            padding: 40px;
+            border: 1px solid var(--color-2);
+            width: 80%;
+            max-width: 900px;
+            border-radius: 15px;
+            position: relative;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            animation: modalFadeIn 0.5s;
+        }
+        
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .close {
+            color: var(--text);
+            float: right;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        
+        .close:hover {
+            color: var(--color-3);
+            transform: rotate(90deg);
+        }
+        
+        .nav-button {
+            background-color: var(--color-2);
+            color: var(--bg);
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 25px;
+            transition: 0.3s;
+            font-weight: 600;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-button:hover:not(:disabled) {
+            background-color: var(--color-3);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .nav-button:disabled {
+            background-color: var(--color-5);
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        
+        .theme-toggle {
+            background-color: var(--color-2);
+            color: var(--bg);
+            border: none;
+            padding: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 40px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .theme-toggle:hover {
+            background-color: var(--color-3);
+            transform: rotate(180deg);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .theme-toggle svg {
+            width: 28px;
+            height: 28px;
+            fill: var(--bg);
+        }
+        
+        /* Новые стили для анимации дождя */
+        .rain-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .raindrop {
+            position: absolute;
+            width: 2px;
+            height: 20px;
+            background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, var(--color-2) 100%);
+            opacity: 0.2;
+            animation: fall linear infinite;
+        }
+        
+        @keyframes fall {
+            to {
+                transform: translateY(100vh);
+            }
+        }
+        
+        /* Улучшенные стили для удобства пользователя */
+        .article-preview {
+            max-height: 100px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .article-preview::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            background: linear-gradient(to bottom, transparent, var(--bg));
+        }
+        
+        .read-more {
+            display: inline-block;
+            margin-top: 10px;
+            color: var(--color-3);
+            font-weight: 600;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+        
+        .read-more:hover {
+            color: var(--color-2);
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 1024px) {
+            .container {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                padding: 30px;
+            }
+            .main-content {
+                padding: 30px;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .article {
+                padding: 25px;
+            }
+            .modal-content {
+                width: 95%;
+                padding: 25px;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="rain-container"></div>
     <div class="container">
         <aside class="sidebar">
-            <div class="logo">
-                <img src="https://pbs.twimg.com/profile_images/1818230722412384256/Ov3E3Puv_400x400.jpg" class="logo">
-            </div>
+            <img src="https://pbs.twimg.com/profile_images/1818230722412384256/Ov3E3Puv_400x400.jpg" alt="Sevex" class="logo">
             <h1>Sevex</h1>
             <p class="title">Software Engineer</p>
             <p class="title">Game Developer</p>
@@ -82,29 +443,30 @@
         <main class="main-content">
             <article class="article" data-id="1">
                 <h2>My Gamedev vlog #1</h2>
-                <div class="article-content">
-                    <p>About my experience</p>
+                <div class="article-preview">
+                    <p>I'm trying myself in gameDev, Devlog #1, I decided to start learning Unreal engine because I have very little experience in it, and a lot of experience in C++, but I chose to implement through Blueprints, so I basically started from scratch, and decided to start right away</p>
                 </div>
+                <a href="#" class="read-more">Continue</a>
                 <div class="article-info">
                     <p>Published: 30 July 2024 | read time: 2 minutes</p>
                     <div class="tags">
                         <span class="tag">Gamedev</span>
                         <span class="tag">Vlog</span>
-                        <span class="tag">Edu
-                        </span>
+                        <span class="tag">Edu</span>
                     </div>
                 </div>
             </article>
             <article class="article" data-id="2">
                 <h2>My Gamedev vlog #2</h2>
-                <div class="article-content">
-                    <p>About my game</p>
+                <div class="article-preview">
+                    <p>Set on a picturesque island akin to Stardew Valley, this game blends charming community life with intense deception. Players engage in daily activities like farming, fishing, and crafting while interacting with around 12 unique residents. As night falls, the game shifts to a darker tone, where players must identify a doppelganger—an entity that can shapeshift into any resident. Observation of residents’ behavior, actions, and speech during the day is crucial to spotting these impostors. Incorrectly identifying a doppelganger and sleeping leads to death, while staying awake results in a confrontation with the doppelganger. Survive the nights, thrive during the day, and use your skills to navigate this suspenseful and engaging world.</p>
                 </div>
+                <a href="#" class="read-more">Continue</a>
                 <div class="article-info">
                     <p>Published: 30 July 2024 | read time: 4 minutes</p>
                     <div class="tags">
                         <span class="tag">The Plot</span>
-                        <span class="tag">gamedev</span>
+                        <span class="tag">Gamedev</span>
                         <span class="tag">Edu</span>
                     </div>
                 </div>
@@ -117,8 +479,8 @@
             <span class="close">&times;</span>
             <h2 id="modalTitle"></h2>
             <div id="modalContent"></div>
-            <div class="navigation">
-                <button id="prevButton" class="nav-button">Prev</button>
+            <div class="navigation" style="margin-top: 30px; display: flex; justify-content: space-between;">
+                <button id="prevButton" class="nav-button">Preview</button>
                 <button id="nextButton" class="nav-button">Next</button>
             </div>
         </div>
@@ -147,7 +509,12 @@
         function updateModalContent() {
             const article = articles[currentArticleIndex];
             modalTitle.textContent = article.title;
-            modalContent.innerHTML = `<p>${article.content}</p><div class="article-info"><p>${article.info}</p><div class="tags">${article.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}</div></div>`;
+            modalContent.innerHTML = `
+                <p>${article.content}</p>
+                <div class="article-info">
+                    <p>${article.info}</p>
+                    <div class="tags">${article.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}</div>
+                </div>`;
             prevButton.disabled = currentArticleIndex === 0;
             nextButton.disabled = currentArticleIndex === articles.length - 1;
         }
@@ -172,6 +539,22 @@
                 : '<svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
         }
 
+        // Создание анимации дождя
+        function createRain() {
+            const rainContainer = document.querySelector('.rain-container');
+            const raindropsCount = 100;
+
+            for (let i = 0; i < raindropsCount; i++) {
+                const raindrop = document.createElement('div');
+                raindrop.classList.add('raindrop');
+                raindrop.style.left = `${Math.random() * 100}%`;
+                raindrop.style.animationDuration = `${Math.random() * 1 + 0.5}s`;
+                raindrop.style.animationDelay = `${Math.random() * 2}s`;
+                rainContainer.appendChild(raindrop);
+            }
+        }
+
+        createRain();
         updateThemeIcon();
     </script>
 </body>
