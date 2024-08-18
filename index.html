@@ -39,17 +39,18 @@
             text-align: center;
             box-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
-        h1 {
+        h1, h2 {
             margin: 0;
             font-size: 2.5em;
             text-transform: uppercase;
             letter-spacing: 2px;
         }
         h2 {
+            font-size: 1.8em;
             color: var(--tg-theme-link-color);
             border-bottom: 2px solid var(--tg-theme-link-color);
             padding-bottom: 10px;
-            margin-top: 0;
+            margin-top: 30px;
         }
         .section {
             background-color: rgba(255, 255, 255, 0.8);
@@ -57,10 +58,11 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             margin-bottom: 30px;
             padding: 25px;
-            transition: transform 0.3s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
         .section:hover {
             transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
         }
         .button {
             background-color: var(--tg-theme-button-color);
@@ -82,6 +84,7 @@
         .button:hover {
             opacity: 0.8;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px);
         }
         .voting-option {
             display: flex;
@@ -91,10 +94,12 @@
             background-color: rgba(255,255,255,0.5);
             padding: 15px;
             border-radius: 8px;
-            transition: background-color 0.3s ease;
+            transition: all 0.3s ease;
+            cursor: pointer;
         }
         .voting-option:hover {
             background-color: rgba(255,255,255,0.7);
+            transform: scale(1.02);
         }
         .progress-bar {
             width: 60%;
@@ -122,10 +127,11 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: background-color 0.3s ease;
+            transition: all 0.3s ease;
         }
         #updatesList li:hover {
             background-color: rgba(255,255,255,0.7);
+            transform: translateX(5px);
         }
         .update-date {
             font-weight: bold;
@@ -148,6 +154,22 @@
         .pulse {
             animation: pulse 2s infinite;
         }
+        #feedbackList {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+        .feedback-item {
+            background-color: rgba(255,255,255,0.5);
+            margin-bottom: 10px;
+            padding: 15px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        .feedback-item:hover {
+            background-color: rgba(255,255,255,0.7);
+            transform: translateX(5px);
+        }
     </style>
 </head>
 <body>
@@ -155,6 +177,10 @@
         <h1><i class="fas fa-gamepad icon"></i>Unreal Engine Game Beta</h1>
     </header>
     <div class="container">
+        <section id="welcome" class="section">
+            <h2><i class="fas fa-user icon"></i>Добро пожаловать</h2>
+            <p id="welcomeMessage"></p>
+        </section>
         <section id="voting" class="section">
             <h2><i class="fas fa-vote-yea icon"></i>Голосование за лучший результат</h2>
             <div id="votingOptions"></div>
@@ -172,6 +198,7 @@
             <h2><i class="fas fa-comments icon"></i>Обратная связь</h2>
             <textarea id="feedbackText" rows="4" style="width: 100%; margin-bottom: 10px; background-color: rgba(255,255,255,0.5); color: var(--tg-theme-text-color); border: none; border-radius: 8px; padding: 10px;" placeholder="Оставьте ваш отзыв здесь..."></textarea>
             <button class="button" onclick="submitFeedback()">Отправить отзыв</button>
+            <div id="feedbackList"></div>
         </section>
     </div>
 
@@ -200,6 +227,16 @@
         ];
 
         let userVoted = false;
+        let selectedOptionId = null;
+
+        function getUserName() {
+            return tg.initDataUnsafe?.user?.first_name || 'Гость';
+        }
+
+        function displayWelcomeMessage() {
+            const userName = getUserName();
+            document.getElementById('welcomeMessage').textContent = `Добро пожаловать, ${userName}! Мы рады видеть вас в нашем бета-тесте Unreal Engine Game.`;
+        }
 
         function displayVotingOptions() {
             const container = document.getElementById('votingOptions');
@@ -224,8 +261,6 @@
         function getTotalVotes() {
             return votingOptions.reduce((sum, option) => sum + option.votes, 0);
         }
-
-        let selectedOptionId = null;
 
         function selectVotingOption(optionId) {
             if (userVoted) return;
@@ -317,10 +352,19 @@
             if (feedbackText.trim() !== '') {
                 tg.sendData(JSON.stringify({ action: 'feedback', text: feedbackText }));
                 showNotification('Спасибо за ваш отзыв!');
+                addFeedbackToList(feedbackText);
                 document.getElementById('feedbackText').value = '';
             } else {
                 showNotification('Пожалуйста, введите текст отзыва.');
             }
+        }
+
+        function addFeedbackToList(text) {
+            const feedbackList = document.getElementById('feedbackList');
+            const feedbackItem = document.createElement('div');
+            feedbackItem.className = 'feedback-item';
+            feedbackItem.textContent = text;
+            feedbackList.insertBefore(feedbackItem, feedbackList.firstChild);
         }
 
         function showNotification(message) {
@@ -345,24 +389,49 @@
             }, 3000);
         }
 
-        function getUserName() {
-            return tg.initDataUnsafe?.user?.first_name || 'Гость';
+        function fetchUpdatedData() {
+            // В реальном приложении здесь был бы запрос к серверу
+            showNotification('Обновление данных...');
+            setTimeout(() => {
+                votingOptions.forEach(option => {
+                    option.votes += Math.floor(Math.random() * 5);
+                });
+                displayVotingOptions();
+                showNotification('Данные успешно обновлены!');
+            }, 2000);
+        }
+
+        function animateVoteChange(optionElement, newVotes, oldVotes) {
+            const voteSpan = optionElement.querySelector('span:last-child');
+            const progressBar = optionElement.querySelector('.progress');
+            
+            let currentVotes = oldVotes;
+            const interval = setInterval(() => {
+                currentVotes += (newVotes > oldVotes ? 1 : -1);
+                voteSpan.textContent = `${currentVotes} голосов`;
+                
+                if (currentVotes === newVotes) {
+                    clearInterval(interval);
+                    const totalVotes = getTotalVotes();
+                    const percentage = (currentVotes / totalVotes) * 100;
+                    progressBar.style.width = `${percentage}%`;
+                    voteSpan.textContent = `${currentVotes} голосов (${percentage.toFixed(1)}%)`;
+                }
+            }, 50);
         }
 
         document.addEventListener('DOMContentLoaded', () => {
+            displayWelcomeMessage();
             displayVotingOptions();
             displayUpdates();
             displayStats();
 
-            // Отображение имени пользователя
-            const userName = getUserName();
-            const welcomeMessage = document.createElement('div');
-            welcomeMessage.textContent = `Добро пожаловать, ${userName}!`;
-            welcomeMessage.style.textAlign = 'center';
-            welcomeMessage.style.marginBottom = '20px';
-            welcomeMessage.style.fontSize = '1.2em';
-            welcomeMessage.style.color = tg.themeParams.text_color;
-            document.querySelector('.container').insertBefore(welcomeMessage, document.querySelector('.container').firstChild);
+            // Добавляем кнопку для обновления данных
+            const updateButton = document.createElement('button');
+            updateButton.textContent = 'Обновить данные';
+            updateButton.className = 'button';
+            updateButton.onclick = fetchUpdatedData;
+            document.getElementById('voting').appendChild(updateButton);
 
             // Проверка, голосовал ли пользователь ранее
             const votedBefore = localStorage.getItem('userVoted');
@@ -373,7 +442,7 @@
             }
         });
 
-        // Сохранение голоса пользователя
+        // Функция для сохранения голоса пользователя
         function saveVote() {
             localStorage.setItem('userVoted', 'true');
         }
@@ -396,73 +465,6 @@
             tg.sendData(JSON.stringify({ action: 'vote', optionId: selectedOptionId }));
             showNotification('Ваш голос учтен!');
             document.getElementById('voteButton').disabled = true;
-        }
-
-        // Функция для обновления данных с сервера (имитация)
-        function fetchUpdatedData() {
-            // В реальном приложении здесь был бы запрос к серверу
-            setTimeout(() => {
-                votingOptions.forEach(option => {
-                    option.votes += Math.floor(Math.random() * 5);
-                });
-                displayVotingOptions();
-                showNotification('Данные обновлены!');
-            }, 2000);
-        }
-
-        // Добавляем кнопку для обновления данных
-        const updateButton = document.createElement('button');
-        updateButton.textContent = 'Обновить данные';
-        updateButton.className = 'button';
-        updateButton.onclick = fetchUpdatedData;
-        document.getElementById('voting').appendChild(updateButton);
-
-        // Функция для анимации изменения голосов
-        function animateVoteChange(optionElement, newVotes, oldVotes) {
-            const voteSpan = optionElement.querySelector('span:last-child');
-            const progressBar = optionElement.querySelector('.progress');
-            
-            let currentVotes = oldVotes;
-            const interval = setInterval(() => {
-                currentVotes += (newVotes > oldVotes ? 1 : -1);
-                voteSpan.textContent = `${currentVotes} голосов`;
-                
-                if (currentVotes === newVotes) {
-                    clearInterval(interval);
-                    const totalVotes = getTotalVotes();
-                    const percentage = (currentVotes / totalVotes) * 100;
-                    progressBar.style.width = `${percentage}%`;
-                    voteSpan.textContent = `${currentVotes} голосов (${percentage.toFixed(1)}%)`;
-                }
-            }, 50);
-        }
-
-        // Обновляем функцию displayVotingOptions для использования анимации
-        function displayVotingOptions() {
-            const container = document.getElementById('votingOptions');
-            votingOptions.forEach(option => {
-                const optionElement = container.querySelector(`[data-id="${option.id}"]`);
-                if (optionElement) {
-                    const oldVotes = parseInt(optionElement.querySelector('span:last-child').textContent);
-                    if (oldVotes !== option.votes) {
-                        animateVoteChange(optionElement, option.votes, oldVotes);
-                    }
-                } else {
-                    const newOptionElement = document.createElement('div');
-                    newOptionElement.className = 'voting-option';
-                    newOptionElement.setAttribute('data-id', option.id);
-                    newOptionElement.innerHTML = `
-                        <span>${option.name}</span>
-                        <div class="progress-bar">
-                            <div class="progress" style="width: 0%"></div>
-                        </div>
-                        <span>0 голосов (0%)</span>
-                    `;
-                    newOptionElement.onclick = () => selectVotingOption(option.id);
-                    container.appendChild(newOptionElement);
-                    animateVoteChange(newOptionElement, option.votes, 0);
-                }
-            });
         }
     </script>
 </body>
